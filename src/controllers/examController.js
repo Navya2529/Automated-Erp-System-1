@@ -1,33 +1,48 @@
-const {
-  Exam,
-  Registration,
-  HallTicket,
-  FeeTransaction,
-  Fine,
-  Issue
-} = require('../models');
+const Exam = require('../models/Exam');
+const Registration = require('../models/Registration');
+const HallTicket = require('../models/HallTicket');
+const Fee = require('../models/Fee');
+const Issue = require('../models/Issue');
+const Student = require('../models/Student');
 
 /**
  * CHECK ELIGIBILITY
  */
 const checkEligibility = async (studentId) => {
+
   // Fee check
-  const paidFee = await FeeTransaction.findOne({
-    where: { studentId, status: 'PAID' }
+  const paidFee = await Fee.findOne({
+    where: {
+      student_id: studentId,
+      payment_status: 'PAID'
+    }
   });
 
-  if (!paidFee) return false;
+  if (!paidFee) {
+    return {
+      eligible: false,
+      reason: "Pending fee payment"
+    };
+  }
 
-  // Library dues check
-  const fines = await Fine.findAll({
-    include: [{
-      model: Issue,
-      where: { studentId }
-    }]
+  // Library check
+  const pendingBook = await Issue.findOne({
+    where: {
+      studentId: studentId,
+      returnDate: null
+    }
   });
 
-  const pendingFine = fines.some(f => !f.paid);
-  return !pendingFine;
+  if (pendingBook) {
+    return {
+      eligible: false,
+      reason: "Library book not returned"
+    };
+  }
+
+  return {
+    eligible: true
+  };
 };
 
 /**
@@ -35,25 +50,34 @@ const checkEligibility = async (studentId) => {
  */
 exports.registerExam = async (req, res) => {
   try {
-    const { studentId, examId } = req.body;
 
-    const eligible = await checkEligibility(studentId);
-    if (!eligible) {
-      return res.status(403).json({
-        message: 'Not eligible for exam (fees/library dues)'
+    console.log("JWT USER:", req.user);
+
+    const email = req.user.email || req.user.id;
+
+    const student = await Student.findOne({
+      where: { email }
+    });
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found"
       });
     }
 
-    const alreadyRegistered = await Registration.findOne({
-      where: { studentId, examId }
-    });
+    const { examId } = req.body;
 
-    if (alreadyRegistered) {
-      return res.status(400).json({ message: 'Already registered' });
-    }
+    const eligibility = await checkEligibility(student.student_id);
+
+if (!eligibility.eligible) {
+  return res.status(403).json({
+    message: "Not eligible for exam",
+    reason: eligibility.reason
+  });
+}
 
     const registration = await Registration.create({
-      studentId,
+      studentId: student.student_id,
       examId
     });
 
@@ -62,12 +86,18 @@ exports.registerExam = async (req, res) => {
     });
 
     res.json({
-      message: 'Exam registered successfully',
+      message: "Exam registered successfully",
       hallTicketNumber: hallTicket.hallTicketNumber
     });
 
-  } catch {
-    res.status(500).json({ message: 'Exam registration failed' });
+  } catch (error) {
+
+    console.error("Exam registration error:", error);
+
+    res.status(500).json({
+      message: "Exam registration failed",
+      error: error.message
+    });
   }
 };
 
@@ -88,7 +118,12 @@ exports.getHallTicket = async (req, res) => {
     }
 
     res.json(ticket);
-  } catch {
-    res.status(500).json({ message: 'Error fetching hall ticket' });
-  }
+  } catch (error) {
+  console.error("Hall ticket error:", error);
+
+  res.status(500).json({
+    message: "Error fetching hall ticket",
+    error: error.message
+  });
+}
 };

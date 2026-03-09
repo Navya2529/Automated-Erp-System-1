@@ -1,17 +1,27 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
-const Hostel = sequelize.define('Hostel', {
-  name: {
+const Room = sequelize.define('Room', {
+
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+
+  roomNumber: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  type: {
-    type: DataTypes.ENUM('BOYS', 'GIRLS'),
+
+  capacity: {
+    type: DataTypes.INTEGER,
     allowNull: false
   }
+
 }, {
-  tableName: 'hostels'
+  tableName: 'rooms',
+  timestamps: true
 });
 
-module.exports = Hostel;
+module.exports = Room;

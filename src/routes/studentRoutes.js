@@ -5,41 +5,23 @@ const {
   createStudent,
   getStudent,
   updateStudent,
-  getAllStudents
+  getAllStudents,
+  getMyProfile
 } = require('../controllers/studentController');
 
 const { protect } = require('../middleware/authMiddleware');
-const role = require('../middleware/roleMiddleware');
+const authorize = require('../middleware/roleMiddleware');
 
-/* ✅ LIST ALL STUDENTS */
-router.get(
-  '/',
-  protect,
-  role(['ADMIN']),
-  getAllStudents
-);
+router.post('/create', protect, authorize(['ADMIN']), createStudent);
 
-/* CREATE STUDENT */
-router.post(
-  '/create',
-  protect,
-  role(['ADMIN']),
-  createStudent
-);
+router.get('/me', protect, authorize(['STUDENT']), getMyProfile)
 
-/* GET STUDENT PROFILE */
-router.get(
-  '/:id',
-  protect,
-  getStudent
-);
+router.get('/:id', protect, getStudent);
 
-/* UPDATE STUDENT */
-router.put(
-  '/update/:id',
-  protect,
-  role(['ADMIN']),
-  updateStudent
-);
+router.put('/:id', protect, authorize(['ADMIN']), updateStudent);
+
+router.get('/', protect, authorize(['ADMIN']), getAllStudents);
+
+;
 
 module.exports = router;

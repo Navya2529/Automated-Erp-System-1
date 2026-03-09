@@ -2,12 +2,26 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
 const Registration = sequelize.define('Registration', {
-  registeredAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+
+  studentId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+
+  examId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   }
+
 }, {
-  tableName: 'exam_registrations'
+  tableName: 'registrations',
+  timestamps: true
 });
 
 module.exports = Registration;

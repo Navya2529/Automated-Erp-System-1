@@ -30,3 +30,42 @@ Put localhost:5000/library/return/1 - return library book
 Get localhost:5000/library/eligibility/1 - if not returned book then not elegible for exam
 Post localhost:5000/exam/register - Register for exam
 get localhost:5000/dashboard/exams - number of people registred for exam
+
+
+
+<!-- Updated API's -->
+post   /seed/admin/
+POST   /auth/login
+POST   /auth/refresh/login
+
+<!-- admin -->
+POST   /students/create
+GET    /students/:id
+GET    /students
+
+<!-- admin -->
+PUT    /admission/approve/:id
+
+<!-- admission -->
+POST   /fees/pay
+GET    /fees/status/:studentId
+
+<!--  -->
+    POST   /hostel/allocate
+    GET    /hostel/occupancy
+
+POST   /library/issue
+PUT    /library/return/:id
+
+GET    /students/me
+POST   /exam/register
+GET    /exam/hallticket/:studentId
+
+GET    /dashboard/admissions
+GET    /dashboard/fees
+GET    /dashboard/hostel
+GET    /dashboard/library
+GET    /dashboard/exams
+GET    /dashboard/admin
+
+https://github.com/SriHari0429/Automated-Erp-System.git

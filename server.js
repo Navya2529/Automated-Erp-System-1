@@ -7,7 +7,6 @@ async function startServer() {
   try {
     await connectDB();
 
-    // 🔴 ADD THIS LINE HERE
     require('./src/models');
 
     await sequelize.sync();
@@ -15,6 +14,7 @@ async function startServer() {
     app.listen(5000, () => {
       console.log('Server running on port 5000');
     });
+
   } catch (error) {
     console.error('Startup failed:', error.message);
     process.exit(1);

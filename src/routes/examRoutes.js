@@ -8,18 +8,8 @@ const {
 
 const { protect } = require('../middleware/authMiddleware');
 
-/* Register exam */
-router.post(
-  '/register',
-  protect,
-  registerExam
-);
+router.post('/register', protect, registerExam);
 
-/* Get hall ticket */
-router.get(
-  '/hallticket/:studentId',
-  protect,
-  getHallTicket
-);
+router.get('/hallticket/:studentId', protect, getHallTicket);
 
 module.exports = router;

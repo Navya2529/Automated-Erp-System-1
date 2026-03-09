@@ -4,32 +4,19 @@ const router = express.Router();
 const {
   issueBook,
   returnBook,
-  checkEligibility
+  checkEligibility,
+  getIssuedBooks,
 } = require('../controllers/libraryController');
 
 const { protect } = require('../middleware/authMiddleware');
-const role = require('../middleware/roleMiddleware');
+const authorize = require('../middleware/roleMiddleware');
 
-/* Issue book – Librarian/Admin */
-router.post(
-  '/issue',
-  protect,
-  role(['ADMIN']),
-  issueBook
-);
+router.post('/issue', protect, authorize(['LIBRARIAN']), issueBook);
 
-/* Return book */
-router.put(
-  '/return/:id',
-  protect,
-  returnBook
-);
+router.put('/return/:id', protect, authorize(['LIBRARIAN']), returnBook);
 
-/* Eligibility check */
-router.get(
-  '/eligibility/:studentId',
-  protect,
-  checkEligibility
-);
+router.get('/eligibility/:studentId', protect, checkEligibility);
+
+router.get("/issued", protect, authorize(["LIBRARIAN"]), getIssuedBooks);
 
 module.exports = router;

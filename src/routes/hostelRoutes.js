@@ -7,21 +7,10 @@ const {
 } = require('../controllers/hostelController');
 
 const { protect } = require('../middleware/authMiddleware');
-const role = require('../middleware/roleMiddleware');
+const authorize = require('../middleware/roleMiddleware');
 
-/* Allocate hostel – Admin/Warden */
-router.post(
-  '/allocate',
-  protect,
-  role(['ADMIN', 'WARDEN']),
-  allocateHostel
-);
+router.post('/allocate', protect, authorize(['WARDEN']), allocateHostel);
 
-/* Occupancy stats */
-router.get(
-  '/occupancy',
-  protect,
-  hostelOccupancy
-);
+router.get('/occupancy', protect, authorize(['WARDEN']), hostelOccupancy);
 
 module.exports = router;

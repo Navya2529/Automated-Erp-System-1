@@ -2,20 +2,22 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
 const Exam = sequelize.define('Exam', {
-  name: {
+
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+
+  examName: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  semester: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  startDate: {
-    type: DataTypes.DATE,
-    allowNull: false
+
+  examDate: {
+    type: DataTypes.DATE
   }
-}, {
-  tableName: 'exams'
+
 });
 
 module.exports = Exam;

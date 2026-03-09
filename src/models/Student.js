@@ -1,42 +1,46 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+const { DataTypes } = require("sequelize");
+const { sequelize } = require("../config/db");
 
-const Student = sequelize.define('Student', {
-  studentId: {
-    type: DataTypes.STRING,
-    unique: true
+const Student = sequelize.define(
+  "Student",
+  {
+    student_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+
+    registration_no: DataTypes.STRING,
+
+    first_name: DataTypes.STRING,
+
+    last_name: DataTypes.STRING,
+
+    gender: DataTypes.STRING,
+
+    dob: DataTypes.DATE,
+
+    email: DataTypes.STRING,
+
+    phone: DataTypes.STRING,
+
+    course: DataTypes.STRING,
+
+    department: DataTypes.STRING,
+
+    year: DataTypes.INTEGER,
+
+    semester: DataTypes.INTEGER,
+
+    admission_status: {
+      type: DataTypes.STRING,
+      defaultValue: "PENDING",
+    },
   },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  dob: {
-    type: DataTypes.DATE
-  },
-  gender: {
-    type: DataTypes.STRING
-  },
-  category: {
-    type: DataTypes.STRING
-  },
-  course: {
-    type: DataTypes.STRING
-  },
-  year: {
-    type: DataTypes.INTEGER
-  },
-  admissionStatus: {
-    type: DataTypes.ENUM('PENDING', 'APPROVED'),
-    defaultValue: 'PENDING'
+  {
+    tableName: "students",
+    timestamps: false,
   }
-}, {
-  tableName: 'students'
-});
-
-/* Auto-generate studentId like STU1001 */
-Student.beforeCreate(async (student) => {
-  const count = await Student.count();
-  student.studentId = `STU${1000 + count + 1}`;
-});
+);
 
 module.exports = Student;

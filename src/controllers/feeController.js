@@ -1,46 +1,55 @@
-const { FeeTransaction, Receipt } = require('../models');
-
+const { FeeTransaction } = require('../models');
 
 /**
- * PAY FEES
- */
-exports.payFees = async (req, res) => {
+
+* PAY FEES
+  */
+  exports.payFees = async (req, res) => {
   try {
-    const { studentId, amount, paymentMode } = req.body;
+  const { studentId, amount } = req.body;
 
-    const fee = await FeeTransaction.create({
-      studentId,
-      amount,
-      paymentMode,
-      status: 'PAID'
-    });
+  const fee = await FeeTransaction.create({
+  student_id: studentId,
+  amount: amount,
+  payment_date: new Date(),
+  payment_status: 'PAID'
+  });
 
-    const receipt = await Receipt.create({
-      feeTransactionId: fee.id,
-      amount
-    });
+  res.json({
+  message: 'Payment successful',
+  feeId: fee.fee_id
+  });
 
-    res.json({
-      message: 'Payment successful',
-      receiptNumber: receipt.receiptNumber
-    });
-
-  } catch (error) {
-    res.status(400).json({ message: 'Payment failed' });
-  }
+} catch (error) {
+console.error(error);
+res.status(400).json({ message: 'Payment failed' });
+}
 };
 
 /**
- * CHECK FEE STATUS
- */
-exports.getFeeStatus = async (req, res) => {
-  try {
-    const fees = await FeeTransaction.findAll({
-      where: { studentId: req.params.studentId }
-    });
 
-    res.json(fees);
-  } catch {
-    res.status(500).json({ message: 'Error fetching fee status' });
+* CHECK FEE STATUS
+  */
+  exports.getFeeStatus = async (req, res) => {
+  try {
+  const studentId = req.params.studentId;
+
+  const fees = await FeeTransaction.findAll({
+  where: { student_id: studentId }
+  });
+
+  if (!fees.length) {
+  return res.status(404).json({
+  message: "No fee records found"
+  });
   }
+
+  res.json(fees);
+
+} catch (error) {
+console.error(error);
+res.status(500).json({
+message: 'Error fetching fee status'
+});
+}
 };

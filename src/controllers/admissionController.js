@@ -13,14 +13,14 @@ exports.approveAdmission = async (req, res) => {
       return res.status(404).json({ message: 'Student not found' });
     }
 
-    if (student.admissionStatus === 'APPROVED') {
+    if (student.admission_status === 'APPROVED') {
       return res.status(400).json({
         message: 'Admission already approved'
       });
     }
 
     // Approve admission
-    student.admissionStatus = 'APPROVED';
+    student.admission_status = 'APPROVED';
     await student.save();
 
     res.json({
