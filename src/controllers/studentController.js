@@ -110,30 +110,23 @@ exports.updateStudent = async (req, res) => {
 exports.getAllStudents = async (req, res) => {
   try {
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-
-    const offset = (page - 1) * limit;
-
-    const students = await Student.findAndCountAll({
-      limit,
-      offset,
-      order: [["created_at", "DESC"]]
+    const students = await Student.findAll({
+      order: [["student_id", "DESC"]]
     });
 
     res.json({
-      totalStudents: students.count,
-      currentPage: page,
-      totalPages: Math.ceil(students.count / limit),
-      data: students.rows
+      totalStudents: students.length,
+      data: students
     });
 
   } catch (error) {
+
     console.error("Fetch students error:", error);
 
     res.status(500).json({
       message: "Error fetching students"
     });
+
   }
 };
 
@@ -143,7 +136,7 @@ exports.getMyProfile = async (req, res) => {
     console.log("JWT USER:", req.user);
 
     const student = await Student.findOne({
-      where: { user_id: req.user.user_id }
+      where: { email: req.user.email }
     });
 
     if (!student) {
